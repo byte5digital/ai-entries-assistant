@@ -2,7 +2,6 @@
 import { Head } from '@statamic/cms/inertia';
 import { Header } from '@statamic/cms/ui';
 
-const __ = window.__;
 </script>
 
 <template>
