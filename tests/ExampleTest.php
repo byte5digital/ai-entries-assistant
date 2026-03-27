@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Byte5\AiEntriesChatbot\Tests;
+namespace Byte5\AiEntriesAssistant\Tests;
 
 final class ExampleTest extends TestCase
 {

@@ -1,1 +1,1 @@
-# AI Entries Chatbot
+# AI Entries Assistant

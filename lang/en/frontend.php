@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 return [
     'navigation' => [
-        'title' => 'AI Chatbot',
+        'title' => 'AI Assistant',
     ],
-    'chatbot' => [
-        'title' => 'AI Chatbot',
+    'assistant' => [
+        'title' => 'AI Assistant',
     ],
 ];

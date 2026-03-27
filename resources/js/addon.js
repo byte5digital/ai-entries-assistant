@@ -3,6 +3,6 @@ const pages = import.meta.glob('../views/*.vue', { eager: true });
 Statamic.booting(() => {
     Object.entries(pages).forEach(([path, module]) => {
         const name = path.match(/\/(\w+)\.vue$/)[1];
-        Statamic.$inertia.register(`ai-entries-chatbot::${name}`, module.default);
+        Statamic.$inertia.register(`ai-entries-assistant::${name}`, module.default);
     });
 });

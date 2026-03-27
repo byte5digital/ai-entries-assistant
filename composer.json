@@ -1,16 +1,16 @@
 {
-    "name": "byte5/ai-entries-chatbot",
-    "description": "Statamic addon for AI-powered chatbot using entry embeddings.",
+    "name": "byte5/ai-entries-assistant",
+    "description": "Statamic addon for AI-powered assistant using entry embeddings.",
     "license": "GPL-3.0-or-later",
     "type": "statamic-addon",
     "autoload": {
         "psr-4": {
-            "Byte5\\AiEntriesChatbot\\": "src"
+            "Byte5\\AiEntriesAssistant\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Byte5\\AiEntriesChatbot\\Tests\\": "tests"
+            "Byte5\\AiEntriesAssistant\\Tests\\": "tests"
         }
     },
     "authors": [
@@ -38,12 +38,12 @@
     },
     "extra": {
         "statamic": {
-            "name": "AI Entries Chatbot",
-            "description": "AI-powered chatbot using entry embeddings"
+            "name": "AI Entries Assistant",
+            "description": "AI-powered assistant using entry embeddings"
         },
         "laravel": {
             "providers": [
-                "Byte5\\AiEntriesChatbot\\ServiceProvider"
+                "Byte5\\AiEntriesAssistant\\ServiceProvider"
             ]
         }
     },

@@ -1,8 +1,8 @@
 <?php
 
-namespace Byte5\AiEntriesChatbot\Tests;
+namespace Byte5\AiEntriesAssistant\Tests;
 
-use Byte5\AiEntriesChatbot\ServiceProvider;
+use Byte5\AiEntriesAssistant\ServiceProvider;
 use Statamic\Testing\AddonTestCase;
 
 abstract class TestCase extends AddonTestCase
