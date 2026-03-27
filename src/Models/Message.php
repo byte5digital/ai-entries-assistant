@@ -4,42 +4,35 @@ declare(strict_types=1);
 
 namespace Byte5\AiEntriesAssistant\Models;
 
+use Byte5\AiEntriesAssistant\Database\Factories\MessageFactory;
+use Byte5\AiEntriesAssistant\Enums\MessageRole;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Concerns\HasTimestamps;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/** @use HasFactory<MessageFactory> */
 final class Message extends Model
 {
-    protected $table = 'agent_conversation_messages';
+    /** @use HasFactory<MessageFactory> */
+    use HasFactory;
+    use HasUuids;
+    use HasTimestamps;
 
-    protected $keyType = 'string';
-
-    public $incrementing = false;
-
+    protected $table = 'ai_entry_assistant_messages';
     protected $fillable = [
-        'id',
         'conversation_id',
         'user_id',
-        'agent',
         'role',
         'content',
-        'attachments',
-        'tool_calls',
-        'tool_results',
-        'usage',
-        'meta',
     ];
 
-    /** @return array<string, string> */
-    protected function casts(): array
+    protected static function newFactory(): MessageFactory
     {
-        return [
-            'attachments' => 'array',
-            'tool_calls' => 'array',
-            'tool_results' => 'array',
-            'usage' => 'array',
-            'meta' => 'array',
-        ];
+        return MessageFactory::new();
     }
 
     /** @return BelongsTo<Conversation, $this> */
@@ -48,15 +41,25 @@ final class Message extends Model
         return $this->belongsTo(Conversation::class, 'conversation_id');
     }
 
-    /** @param Builder<self> $query */
-    public function scopeUserMessages(Builder $query): void
+    /** @return array<string, string> */
+    protected function casts(): array
     {
-        $query->where('role', 'user');
+        return [
+            'role' => MessageRole::class,
+        ];
     }
 
-    /** @param Builder<self> $query */
-    public function scopeAssistantMessages(Builder $query): void
+    /** @param  Builder<self>  $query */
+    #[Scope]
+    protected function userMessages(Builder $query): void
     {
-        $query->where('role', 'assistant');
+        $query->where('role', MessageRole::User);
+    }
+
+    /** @param  Builder<self>  $query */
+    #[Scope]
+    protected function assistantMessages(Builder $query): void
+    {
+        $query->where('role', MessageRole::AiAssistant);
     }
 }

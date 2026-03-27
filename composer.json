@@ -1,52 +1,53 @@
 {
-    "name": "byte5/ai-entries-assistant",
-    "description": "Statamic addon for AI-powered assistant using entry embeddings.",
-    "license": "GPL-3.0-or-later",
-    "type": "statamic-addon",
-    "autoload": {
-        "psr-4": {
-            "Byte5\\AiEntriesAssistant\\": "src"
-        }
+  "name": "byte5/ai-entries-assistant",
+  "description": "Statamic addon for AI-powered assistant using entry embeddings.",
+  "license": "GPL-3.0-or-later",
+  "type": "statamic-addon",
+  "autoload": {
+    "psr-4": {
+      "Byte5\\AiEntriesAssistant\\": "src",
+      "Byte5\\AiEntriesAssistant\\Database\\Factories\\": "database/factories"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Byte5\\AiEntriesAssistant\\Tests\\": "tests"
+    }
+  },
+  "authors": [
+    {
+      "name": "byte5 GmbH",
+      "email": "info@byte5.de"
+    }
+  ],
+  "require": {
+    "php": "^8.3",
+    "statamic/cms": "^6.0",
+    "laravel/ai": "^0.3.0"
+  },
+  "require-dev": {
+    "orchestra/testbench": "^10.8",
+    "driftingly/rector-laravel": "^2.2",
+    "rector/rector": "^2.3",
+    "larastan/larastan": "^3.9",
+    "laravel/pint": "^1.29"
+  },
+  "config": {
+    "allow-plugins": {
+      "pixelfear/composer-dist-plugin": true
+    }
+  },
+  "extra": {
+    "statamic": {
+      "name": "AI Entries Assistant",
+      "description": "AI-powered assistant using entry embeddings"
     },
-    "autoload-dev": {
-        "psr-4": {
-            "Byte5\\AiEntriesAssistant\\Tests\\": "tests"
-        }
-    },
-    "authors": [
-        {
-            "name": "byte5 GmbH",
-            "email": "info@byte5.de"
-        }
-    ],
-    "require": {
-        "php": "^8.3",
-        "statamic/cms": "^6.0",
-        "laravel/ai": "^0.3.0"
-    },
-    "require-dev": {
-        "orchestra/testbench": "^10.8",
-        "driftingly/rector-laravel": "^2.2",
-        "rector/rector": "^2.3",
-        "larastan/larastan": "^3.9",
-        "laravel/pint": "^1.29"
-    },
-    "config": {
-        "allow-plugins": {
-            "pixelfear/composer-dist-plugin": true
-        }
-    },
-    "extra": {
-        "statamic": {
-            "name": "AI Entries Assistant",
-            "description": "AI-powered assistant using entry embeddings"
-        },
-        "laravel": {
-            "providers": [
-                "Byte5\\AiEntriesAssistant\\ServiceProvider"
-            ]
-        }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    "laravel": {
+      "providers": [
+        "Byte5\\AiEntriesAssistant\\ServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }

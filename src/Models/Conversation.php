@@ -4,18 +4,28 @@ declare(strict_types=1);
 
 namespace Byte5\AiEntriesAssistant\Models;
 
+use Byte5\AiEntriesAssistant\Database\Factories\ConversationFactory;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/** @use HasFactory<ConversationFactory> */
 final class Conversation extends Model
 {
-    protected $table = 'agent_conversations';
+    /** @use HasFactory<ConversationFactory> */
+    use HasFactory;
+    use HasUuids;
 
-    protected $keyType = 'string';
+    protected static function newFactory(): ConversationFactory
+    {
+        return ConversationFactory::new();
+    }
 
-    public $incrementing = false;
+    protected $table = 'ai_entry_assistant_conversations';
 
     protected $fillable = [
         'id',
@@ -36,7 +46,8 @@ final class Conversation extends Model
     }
 
     /** @param Builder<self> $query */
-    public function scopeForUser(Builder $query, string $userId): void
+    #[Scope]
+    protected function forUser(Builder $query, string $userId): void
     {
         $query->where('user_id', $userId);
     }
