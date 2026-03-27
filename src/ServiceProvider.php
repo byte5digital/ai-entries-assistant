@@ -25,7 +25,9 @@ final class ServiceProvider extends AddonServiceProvider
             __DIR__.'/../config/ai-entries-chatbot.php' => config_path('ai-entries-chatbot.php'),
         ], 'config');
         $this->loadTranslationsFrom(__DIR__.'/../lang', 'ai-entries-chatbot');
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->publishesMigrations([
+            __DIR__.'/../database/migrations' => database_path('migrations'),
+        ]);
         $this->bootNav();
         $this->bootPermissions();
     }
