@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Byte5\AiEntriesAssistant;
 
+use Byte5\AiEntriesAssistant\Models\Conversation;
 use Byte5\AiEntriesAssistant\Repositories\Contracts\ConversationRepositoryInterface;
 use Byte5\AiEntriesAssistant\Repositories\ConversationRepository;
 use Byte5\AiEntriesAssistant\Services\Contracts\ConversationServiceInterface;
 use Byte5\AiEntriesAssistant\Services\Contracts\MessageServiceInterface;
 use Byte5\AiEntriesAssistant\Services\ConversationService;
 use Byte5\AiEntriesAssistant\Services\MessageService;
+use Illuminate\Support\Facades\Broadcast;
 use Statamic\CP\Navigation\Nav;
 use Statamic\Facades\CP\Nav as NavAPI;
 use Statamic\Facades\Permission;
@@ -34,6 +36,7 @@ final class ServiceProvider extends AddonServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->bootNav();
         $this->bootPermissions();
+        $this->bootBroadcastChannels();
     }
 
     private function bootNav(): void
@@ -51,6 +54,15 @@ final class ServiceProvider extends AddonServiceProvider
     {
         Permission::register('access AI assistant')
             ->label(__('ai-entries-assistant::permissions.access.title'));
+    }
+
+    private function bootBroadcastChannels(): void
+    {
+        Broadcast::channel('conversation.{conversationId}', function ($user, string $conversationId) {
+            $conversation = Conversation::find($conversationId);
+
+            return $conversation && $conversation->user_id === $user->getAuthIdentifier();
+        });
     }
 
     public function register(): void

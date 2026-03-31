@@ -41,7 +41,7 @@ final class GenerateAiAssistantReply implements ShouldQueue
 
     public function viaQueue(): string
     {
-        return config('ai-entries-assistant.queue', 'default');
+        return config('ai-entries-assistant.jobs_queue', 'default');
     }
 
     public function failed(UserMessageAddedToConversation $event, \Throwable $exception): void

@@ -6,16 +6,28 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Queue Name
+    | Jobs Queue
     |--------------------------------------------------------------------------
     |
-    | The queue that AI assistant jobs (e.g. generating replies) are dispatched
-    | to. Set this to a dedicated queue name if you want to isolate AI
+    | The queue used for AI assistant jobs such as generating replies.
+    | Set this to a dedicated queue name if you want to isolate AI
     | processing from other queued work in your application.
     |
     */
 
-    'queue' => env('AI_ENTRIES_ASSISTANT_QUEUE', 'default'),
+    'jobs_queue' => env('AI_ENTRIES_ASSISTANT_JOBS_QUEUE', 'default'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Broadcasting Queue
+    |--------------------------------------------------------------------------
+    |
+    | The queue used for broadcasting message events to the frontend
+    | via Echo. Only relevant when 'message_fetching' is set to 'echo'.
+    |
+    */
+
+    'broadcasting_queue' => env('AI_ENTRIES_ASSISTANT_BROADCASTING_QUEUE', 'default'),
 
     /*
     |--------------------------------------------------------------------------
