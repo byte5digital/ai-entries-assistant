@@ -8,10 +8,9 @@ use Byte5\AiEntriesAssistant\Enums\MessageRole;
 use Byte5\AiEntriesAssistant\Models\Message;
 use Byte5\AiEntriesAssistant\Services\Contracts\MessageServiceInterface;
 use Byte5\AiEntryEmbeddings\Models\EntryEmbeddingChunk;
-use Laravel\Ai\Attributes\Provider;
+use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Ai\Attributes\Temperature;
 use Laravel\Ai\Attributes\Timeout;
-use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Contracts\Conversational;
 use Laravel\Ai\Contracts\HasStructuredOutput;
@@ -23,7 +22,6 @@ use Laravel\Ai\Promptable;
 use Laravel\Ai\Tools\SimilaritySearch;
 use Stringable;
 
-#[Provider(Lab::Anthropic)]
 #[Temperature(0.7)]
 #[Timeout(120)]
 final class EntriesAssistantAgent implements Agent, Conversational, HasTools, HasStructuredOutput
@@ -34,8 +32,12 @@ final class EntriesAssistantAgent implements Agent, Conversational, HasTools, Ha
 
     public function __construct(
         private readonly MessageServiceInterface $messageService,
-    )
+    ) {
+    }
+
+    public function provider(): Lab|string
     {
+        return config('ai-entries-assistant.provider') ?? config('ai.default');
     }
 
     public function forConversation(string $conversationId): self
@@ -58,6 +60,7 @@ final class EntriesAssistantAgent implements Agent, Conversational, HasTools, Ha
         - Do NOT search the internet or reference external sources.
         - When answering, you may summarize and synthesize information from multiple search results, but never add information that isn't in the results.
         - ALWAYS format your answer in Markdown. Use headings, lists, bold, and other Markdown syntax to make the response clear and readable.
+        - Do NOT use emojis in your responses.
         INSTRUCTIONS;
     }
 

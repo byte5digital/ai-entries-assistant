@@ -5,6 +5,12 @@ import {Head} from '@statamic/cms/inertia';
 import {Button, Header} from '@statamic/cms/ui';
 import ExpandableTextarea from "../js/components/ExpandableTextarea.vue";
 import {usePolling} from "../js/composables/usePolling.js";
+import {marked} from 'marked';
+
+marked.setOptions({
+  breaks: true,
+  gfm: true,
+});
 
 const props = defineProps({
   conversationId: String,
@@ -166,7 +172,8 @@ onUnmounted(() => {
               : 'bg-gray-100 text-gray-900'"
             class="max-w-[75%] rounded-lg px-4 py-2"
         >
-          <p class="whitespace-pre-wrap text-sm">{{ message.content }}</p>
+          <div v-if="message.role === 'ai_assistant'" class="prose prose-sm" v-html="marked(message.content)"></div>
+          <p v-else class="whitespace-pre-wrap text-sm">{{ message.content }}</p>
           <p
               :class="message.role === 'user' ? 'text-blue-200' : 'text-gray-400'"
               class="mt-1 text-xs"

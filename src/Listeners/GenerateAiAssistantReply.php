@@ -33,9 +33,13 @@ final class GenerateAiAssistantReply implements ShouldQueue
             ->forConversation($event->conversation->id)
             ->prompt($event->message->content);
 
+        $content = isset($response['answer'])
+            ? $response['answer']
+            : (string) $response;
+
         $this->messageService->createAiAssistantMessage(
             $event->conversation->id,
-            $response['answer'],
+            $content,
         );
     }
 

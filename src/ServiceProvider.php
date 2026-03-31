@@ -62,6 +62,10 @@ final class ServiceProvider extends AddonServiceProvider
 
     private function bootBroadcastChannels(): void
     {
+        if (! config('ai-entries-assistant.broadcasting')) {
+            return;
+        }
+
         Broadcast::channel('conversation.{conversationId}', function ($user, string $conversationId) {
             $conversation = Conversation::find($conversationId);
 

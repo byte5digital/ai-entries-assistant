@@ -6,7 +6,9 @@
     },
     "dependencies": {
         "@statamic/cms": "file:./vendor/statamic/cms/resources/dist-package",
-        "axios": "^1.13.6"
+        "@tailwindcss/typography": "^0.5.19",
+        "axios": "^1.13.6",
+        "marked": "^17.0.5"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.2.1",
