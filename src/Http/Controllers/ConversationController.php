@@ -48,16 +48,26 @@ final class ConversationController extends CpController
             'initialMessages' => MessageResource::collection($messages)->response($request)->getData(true),
             'messagesUrl' => cp_route('ai-entries-assistant.conversations.messages', $conversation->id),
             'storeMessageUrl' => cp_route('ai-entries-assistant.conversations.messages.store', $conversation->id),
+            'messageFetchingStrategy' => config('ai-entries-assistant.message_fetching', 'polling'),
         ]);
     }
 
     public function messages(Request $request, Conversation $conversation): AnonymousResourceCollection
     {
-        $messages = $conversation->messages()
-            ->latest()
-            ->cursorPaginate(20);
+        $query = $conversation->messages();
 
-        return MessageResource::collection($messages);
+        if ($request->has('since')) {
+            $sinceMessage = $conversation->messages()->find($request->get('since'));
+
+            if ($sinceMessage) {
+                $query = $query->where('created_at', '>', $sinceMessage->created_at)
+                    ->orderBy('created_at');
+            }
+
+            return MessageResource::collection($query->get());
+        }
+
+        return MessageResource::collection($query->latest()->cursorPaginate(20));
     }
 
     public function storeMessage(
