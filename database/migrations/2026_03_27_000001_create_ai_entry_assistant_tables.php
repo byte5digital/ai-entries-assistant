@@ -24,7 +24,7 @@ return new class extends Migration
                 ->references('id')
                 ->on('ai_entry_assistant_conversations')
                 ->cascadeOnDelete();
-            $table->string('user_id', 36)->index()->comment('Statamic user UUID of message author');
+            $table->string('user_id', 36)->nullable()->index()->comment('Statamic user UUID of message author, null for AI messages');
             $table->string('role')->comment('Message role: user or ai_assistant');
             $table->text('content')->comment('Message body text');
             $table->timestamps();
