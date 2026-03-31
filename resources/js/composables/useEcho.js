@@ -1,46 +1,43 @@
 import {ref, onUnmounted} from 'vue';
 
 /**
- * Listens for new messages via Laravel Echo on a private conversation channel.
+ * Listens for new messages (user and AI assistant) via Laravel Echo on a
+ * private conversation channel.
  *
- * Unlike polling, Echo connects once on mount and stays connected for the
- * lifetime of the component. Messages are pushed from the server in real-time.
+ * Connects once when called and stays connected for the component's lifetime.
+ * The channel is automatically left when the component unmounts.
  *
- * Scaffold only — requires:
- *   1. Install @laravel/echo-vue and a broadcast driver (Reverb, Pusher, Soketi)
- *   2. Configure Echo via configureEcho() in your app bootstrap
- *   3. Make AiAssistantMessageAddedToConversation implement ShouldBroadcast
- *   4. Add broadcastOn() returning: new PrivateChannel('conversation.'.$this->conversation->id)
- *   5. Add channel authorization in routes/channels.php
+ * Requires Laravel Echo to be bootstrapped on `window.Echo` in the host app.
+ * If Echo is not available, logs a warning and falls back to a no-op.
+ *
+ * @see docs/ECHO_SETUP.md for host app configuration instructions.
  */
 export function useEchoMessages(conversationId, onNewMessages) {
     const isListening = ref(false);
+    const channelName = `conversation.${conversationId}`;
 
-    // TODO: Replace with actual Echo implementation:
-    //
-    // import {useEcho} from '@laravel/echo-vue';
-    //
-    // const {leaveChannel} = useEcho(
-    //     `conversation.${conversationId}`,
-    //     'AiAssistantMessageAddedToConversation',
-    //     (event) => {
-    //         onNewMessages([event.message]);
-    //     },
-    // );
-    //
-    // isListening.value = true;
-    //
-    // When using useEcho from @laravel/echo-vue, the channel is automatically
-    // left when the component unmounts — no manual cleanup needed.
+    if (typeof window.Echo === 'undefined') {
+        console.warn(
+            '[AI Entries Assistant] window.Echo is not available. ' +
+            'Install Laravel Echo and a broadcast driver to use real-time updates. ' +
+            'See docs/ECHO_SETUP.md for setup instructions.'
+        );
 
-    console.warn(
-        '[AI Entries Assistant] Echo strategy is not yet implemented. ' +
-        'Install @laravel/echo-vue and a broadcast driver, then update ' +
-        'resources/js/composables/useEcho.js. Falling back to no-op.'
-    );
+        return {isListening, cleanup: () => {}};
+    }
+
+    window.Echo.private(channelName)
+        .listen('.user.message.created', (event) => {
+            onNewMessages([event.message]);
+        })
+        .listen('.assistant.message.created', (event) => {
+            onNewMessages([event.message]);
+        });
+
+    isListening.value = true;
 
     function cleanup() {
-        // TODO: call leaveChannel() if manual cleanup is needed
+        window.Echo.leave(channelName);
         isListening.value = false;
     }
 

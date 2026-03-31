@@ -31,7 +31,11 @@ final class ServiceProvider extends AddonServiceProvider
     {
         $this->publishes([
             __DIR__.'/../config/ai-entries-assistant.php' => config_path('ai-entries-assistant.php'),
-        ], 'config');
+        ], 'ai-entries-assistant-config');
+
+        $this->publishes([
+            __DIR__.'/../resources/views' => resource_path('views/vendor/ai-entries-assistant'),
+        ], 'ai-entries-assistant-views');
         $this->loadTranslationsFrom(__DIR__.'/../lang', 'ai-entries-assistant');
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->bootNav();

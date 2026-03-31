@@ -48,7 +48,6 @@ final class ConversationController extends CpController
             'initialMessages' => MessageResource::collection($messages)->response($request)->getData(true),
             'messagesUrl' => cp_route('ai-entries-assistant.conversations.messages', $conversation->id),
             'storeMessageUrl' => cp_route('ai-entries-assistant.conversations.messages.store', $conversation->id),
-            'messageFetchingStrategy' => config('ai-entries-assistant.message_fetching', 'polling'),
         ]);
     }
 

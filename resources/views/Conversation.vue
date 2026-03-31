@@ -5,7 +5,6 @@ import {Head} from '@statamic/cms/inertia';
 import {Button, Header} from '@statamic/cms/ui';
 import ExpandableTextarea from "../js/components/ExpandableTextarea.vue";
 import {usePolling} from "../js/composables/usePolling.js";
-import {useEchoMessages} from "../js/composables/useEcho.js";
 
 const props = defineProps({
   conversationId: String,
@@ -13,10 +12,6 @@ const props = defineProps({
   initialMessages: Object,
   messagesUrl: String,
   storeMessageUrl: String,
-  messageFetchingStrategy: {
-    type: String,
-    default: 'polling',
-  },
 });
 
 const scrollContainer = ref(null);
@@ -45,22 +40,12 @@ function handleNewMessages(messages) {
 
   allMessages.value.push(...newMessages);
   waitingForReply.value = false;
-
-  // Stop polling when reply arrives (Echo stays connected — no action needed)
-  if (props.messageFetchingStrategy === 'polling') {
-    polling.stop();
-  }
+  polling.stop();
 
   nextTick(() => scrollToBottom());
 }
 
-// Polling: active fetching, started/stopped per message cycle
 const polling = usePolling(props.messagesUrl, lastMessageId, handleNewMessages);
-
-// Echo: passive listening, connected for the component's lifetime
-if (props.messageFetchingStrategy === 'echo') {
-  useEchoMessages(props.conversationId, handleNewMessages);
-}
 
 function initMessages() {
   const data = props.initialMessages?.data ?? [];
@@ -116,10 +101,7 @@ async function sendMessage() {
     await nextTick();
     scrollToBottom();
 
-    // Only polling needs to be started — Echo is already listening
-    if (props.messageFetchingStrategy === 'polling') {
-      polling.start();
-    }
+    polling.start();
   } finally {
     sending.value = false;
   }
@@ -147,17 +129,13 @@ onMounted(() => {
     if (last && last.role === 'user') {
       waitingForReply.value = true;
 
-      // Echo is already listening; only polling needs a manual start
-      if (props.messageFetchingStrategy === 'polling') {
-        polling.start();
-      }
+      polling.start();
     }
   });
 });
 
 onUnmounted(() => {
   polling.stop();
-  // Echo cleanup is handled automatically by useEchoMessages via onUnmounted
 });
 </script>
 
