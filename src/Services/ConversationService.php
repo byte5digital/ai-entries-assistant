@@ -43,4 +43,11 @@ final class ConversationService implements ConversationServiceInterface
 
         ConversationDeleted::dispatch($conversationId, $userId, $title);
     }
+
+    public function updateTitle(Conversation $conversation, string $title): Conversation
+    {
+        $conversation->update(['title' => $title]);
+
+        return $conversation;
+    }
 }

@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Byte5\AiEntriesAssistant\Http\Controllers;
 
 use Byte5\AiEntriesAssistant\Http\Requests\AddMessageToConversationRequest;
+use Byte5\AiEntriesAssistant\Http\Requests\UpdateConversationTitleRequest;
 use Byte5\AiEntriesAssistant\Http\Resources\MessageResource;
 use Byte5\AiEntriesAssistant\Models\Conversation;
 use Byte5\AiEntriesAssistant\Services\Contracts\ConversationServiceInterface;
 use Byte5\AiEntriesAssistant\Services\Contracts\MessageServiceInterface;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -48,6 +50,7 @@ final class ConversationController extends CpController
             'initialMessages' => MessageResource::collection($messages)->response($request)->getData(true),
             'messagesUrl' => cp_route('ai-entries-assistant.conversations.messages', $conversation->id),
             'storeMessageUrl' => cp_route('ai-entries-assistant.conversations.messages.store', $conversation->id),
+            'updateTitleUrl' => cp_route('ai-entries-assistant.conversations.title.update', $conversation->id),
         ]);
     }
 
@@ -67,6 +70,21 @@ final class ConversationController extends CpController
         }
 
         return MessageResource::collection($query->latest()->cursorPaginate(20));
+    }
+
+    public function updateTitle(
+        UpdateConversationTitleRequest $request,
+        Conversation $conversation,
+        ConversationServiceInterface $conversationService,
+    ): JsonResponse {
+        $conversationService->updateTitle(
+            $conversation,
+            $request->validated('title'),
+        );
+
+        return response()->json([
+            'title' => $conversation->title,
+        ]);
     }
 
     public function storeMessage(

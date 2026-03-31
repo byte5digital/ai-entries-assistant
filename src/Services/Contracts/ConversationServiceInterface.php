@@ -32,4 +32,9 @@ interface ConversationServiceInterface
      * after removal.
      */
     public function deleteConversation(Conversation $conversation): void;
+
+    /**
+     * Update the title of an existing conversation.
+     */
+    public function updateTitle(Conversation $conversation, string $title): Conversation;
 }

@@ -2,7 +2,7 @@
 import {computed, nextTick, onMounted, onUnmounted, ref} from 'vue';
 import axios from 'axios';
 import {Head} from '@statamic/cms/inertia';
-import {Button, Header} from '@statamic/cms/ui';
+import {Button, Dropdown, DropdownItem, DropdownMenu, Header, Input, Modal, ModalClose} from '@statamic/cms/ui';
 import ExpandableTextarea from "../js/components/ExpandableTextarea.vue";
 import {usePolling} from "../js/composables/usePolling.js";
 import {marked} from 'marked';
@@ -18,7 +18,13 @@ const props = defineProps({
   initialMessages: Object,
   messagesUrl: String,
   storeMessageUrl: String,
+  updateTitleUrl: String,
 });
+
+const title = ref(props.conversationTitle);
+const showRenameModal = ref(false);
+const renameInput = ref('');
+const renaming = ref(false);
 
 const scrollContainer = ref(null);
 const allMessages = ref([]);
@@ -125,6 +131,26 @@ function formatTime(isoString) {
   return date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
 }
 
+function openRenameModal() {
+  renameInput.value = title.value;
+  showRenameModal.value = true;
+}
+
+async function submitRename() {
+  if (renaming.value || !renameInput.value.trim()) return;
+
+  renaming.value = true;
+  try {
+    const {data} = await axios.patch(props.updateTitleUrl, {
+      title: renameInput.value.trim(),
+    });
+    title.value = data.title;
+    showRenameModal.value = false;
+  } finally {
+    renaming.value = false;
+  }
+}
+
 onMounted(() => {
   initMessages();
   nextTick(() => {
@@ -146,10 +172,21 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <Head :title="conversationTitle"/>
+  <Head :title="title"/>
 
   <div class="flex flex-col" style="height: calc(100vh - 52px);">
-    <Header :title="conversationTitle"/>
+    <Header>
+      <template #title>
+        <Dropdown>
+          <template #trigger>
+            <button class="cursor-pointer hover:text-blue-500 transition-colors">{{ title }}</button>
+          </template>
+          <DropdownMenu>
+            <DropdownItem icon="pencil" text="Rename" @click="openRenameModal"/>
+          </DropdownMenu>
+        </Dropdown>
+      </template>
+    </Header>
 
     <div
         ref="scrollContainer"
@@ -219,4 +256,32 @@ onUnmounted(() => {
       </div>
     </div>
   </div>
+
+  <Modal
+      :open="showRenameModal"
+      title="Rename conversation"
+      @update:open="showRenameModal = $event"
+  >
+    <form @submit.prevent="submitRename">
+      <Input
+          v-model="renameInput"
+          :disabled="renaming"
+          :focus="true"
+          placeholder="Conversation title"
+      />
+    </form>
+    <template #footer>
+      <div class="flex items-center justify-end gap-2">
+        <ModalClose>
+          <Button text="Cancel" variant="ghost"/>
+        </ModalClose>
+        <Button
+            :disabled="renaming || !renameInput.trim()"
+            text="Save"
+            variant="primary"
+            @click="submitRename"
+        />
+      </div>
+    </template>
+  </Modal>
 </template>
