@@ -32,7 +32,7 @@ function onTitleUpdated(newTitle) {
 <template>
   <div class="h-full flex flex-col">
     <Header :title="__('ai-entries-assistant::frontend.landing_page.title')" icon="ai-spark"/>
-    <Panel class="flex flex-row flex-1 min-h-0">
+    <Panel class="relative flex flex-row flex-1 min-h-0">
       <ConversationSidebar
           ref="sidebarRef"
           :active-conversation-id="conversationId"
@@ -40,6 +40,7 @@ function onTitleUpdated(newTitle) {
           :initial-conversations="initialConversations"
           :landing-page-url="landingPageUrl"
           :open="sidebarOpen"
+          @close="sidebarOpen = false"
       />
 
       <ConversationComponent

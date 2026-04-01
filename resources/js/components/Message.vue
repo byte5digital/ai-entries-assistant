@@ -15,7 +15,7 @@ const props = defineProps({
       :class="message.role === 'user'
                     ? 'bg-primary text-gray-100 justify-self-end'
                     : 'bg-gray-100 text-gray-900  justify-self-start'"
-      class="max-w-[80%] rounded-lg px-4 py-2"
+      class="sm:max-w-[90%] md:max-w-[80%] rounded-lg px-4 py-2"
   >
     <div v-if="message.role === 'ai_assistant'" class="prose prose-sm"
          v-html="marked(message.content)"></div>
