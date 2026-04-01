@@ -21,5 +21,23 @@ return [
     'conversation' => [
         'title' => 'Conversation',
         'input_placeholder' => 'Type your question here...',
+        'loading_older_messages' => 'Loading older messages...',
+        'start_of_conversation' => 'Start of the conversation',
+        'rename' => 'Rename',
+        'delete' => 'Delete',
+        'close_sidebar' => 'Close sidebar',
+        'open_sidebar' => 'Open sidebar',
+        'untitled' => 'Untitled',
+        'loading' => 'Loading...',
+        'rename_modal_title' => 'Rename conversation',
+        'rename_modal_placeholder' => 'Conversation title',
+        'cancel' => 'Cancel',
+        'save' => 'Save',
+        'delete_modal_title' => 'Delete conversation',
+        'delete_modal_body' => 'Are you sure you want to delete this conversation? This action cannot be undone.',
+    ],
+    'sidebar' => [
+        'conversations' => 'Conversations',
+        'new_conversation' => 'New conversation',
     ]
 ];

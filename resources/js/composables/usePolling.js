@@ -1,4 +1,4 @@
-import {ref} from 'vue';
+import {shallowRef} from 'vue';
 import axios from 'axios';
 
 const POLL_INTERVAL_MS = 3000;
@@ -11,7 +11,7 @@ const POLL_INTERVAL_MS = 3000;
  * passive real-time listening.
  */
 export function usePolling(messagesUrl, lastMessageId, onNewMessages) {
-    const isPolling = ref(false);
+    const isPolling = shallowRef(false);
     let intervalId = null;
 
     async function poll() {

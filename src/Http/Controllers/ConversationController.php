@@ -6,6 +6,7 @@ namespace Byte5\AiEntriesAssistant\Http\Controllers;
 
 use Byte5\AiEntriesAssistant\Http\Requests\AddMessageToConversationRequest;
 use Byte5\AiEntriesAssistant\Http\Requests\UpdateConversationTitleRequest;
+use Byte5\AiEntriesAssistant\Http\Resources\ConversationResource;
 use Byte5\AiEntriesAssistant\Http\Resources\MessageResource;
 use Byte5\AiEntriesAssistant\Models\Conversation;
 use Byte5\AiEntriesAssistant\Services\Contracts\ConversationServiceInterface;
@@ -19,9 +20,16 @@ use Statamic\Http\Controllers\CP\CpController;
 
 final class ConversationController extends CpController
 {
-    public function index(Request $request)
+    public function index(Request $request): AnonymousResourceCollection
     {
-        return Inertia::render('ai-entries-assistant::Conversations');
+        $userId = (string) $request->user()->getAuthIdentifier();
+
+        $conversations = Conversation::query()
+            ->forUser($userId)
+            ->latest()
+            ->cursorPaginate(20);
+
+        return ConversationResource::collection($conversations);
     }
 
     public function store(
@@ -40,7 +48,14 @@ final class ConversationController extends CpController
 
     public function show(Request $request, Conversation $conversation)
     {
+        $userId = (string) $request->user()->getAuthIdentifier();
+
         $messages = $conversation->messages()
+            ->latest()
+            ->cursorPaginate(20);
+
+        $conversations = Conversation::query()
+            ->forUser($userId)
             ->latest()
             ->cursorPaginate(20);
 
@@ -48,6 +63,9 @@ final class ConversationController extends CpController
             'conversationId' => $conversation->id,
             'conversationTitle' => $conversation->title,
             'initialMessages' => MessageResource::collection($messages)->response($request)->getData(true),
+            'initialConversations' => ConversationResource::collection($conversations)->response($request)->getData(true),
+            'landingPageUrl' => cp_route('ai-entries-assistant.index'),
+            'conversationsUrl' => cp_route('ai-entries-assistant.conversations.index'),
             'messagesUrl' => cp_route('ai-entries-assistant.conversations.messages', $conversation->id),
             'storeMessageUrl' => cp_route('ai-entries-assistant.conversations.messages.store', $conversation->id),
             'updateTitleUrl' => cp_route('ai-entries-assistant.conversations.title.update', $conversation->id),
