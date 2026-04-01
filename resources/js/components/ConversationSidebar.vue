@@ -12,7 +12,6 @@ const props = defineProps({
   open: Boolean,
 });
 
-const sidebarScrollContainer = shallowRef(null);
 const allConversations = ref([]);
 const conversationsNextCursor = shallowRef(null);
 const conversationsHasMore = shallowRef(false);
@@ -43,15 +42,6 @@ async function loadMoreConversations() {
   }
 }
 
-function onSidebarScroll() {
-  const el = sidebarScrollContainer.value;
-  if (!el) return;
-
-  const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
-  if (distanceFromBottom < 50 && conversationsHasMore.value) {
-    loadMoreConversations();
-  }
-}
 
 function navigateToConversation(url) {
   router.visit(url);
@@ -71,10 +61,8 @@ initConversations();
 
 <template>
   <aside
-      ref="sidebarScrollContainer"
       :class="open ? 'w-72' : 'w-0'"
       class="shrink-0 overflow-y-auto overflow-x-hidden transition-all duration-300 ease-in-out"
-      @scroll="onSidebarScroll"
   >
     <div class="w-72 px-3 pt-5 space-y-5">
       <Button
@@ -97,9 +85,18 @@ initConversations();
             @click="navigateToConversation(conversation.url)"
         />
 
-        <div v-if="loadingMoreConversations" class="py-2 text-center text-xs text-gray-400">
+        <div v-if="loadingMoreConversations" class="py-2 text-center text-xs text-gray-400 animate-pulse">
           {{ __('ai-entries-assistant::frontend.conversation.loading') }}
         </div>
+
+        <Button
+            v-if="conversationsHasMore && !loadingMoreConversations"
+            :text="__('ai-entries-assistant::frontend.sidebar.load_more')"
+            class="w-full mt-1"
+            variant="ghost"
+            size="sm"
+            @click="loadMoreConversations"
+        />
       </div>
     </div>
   </aside>

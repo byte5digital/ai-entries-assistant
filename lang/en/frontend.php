@@ -39,6 +39,7 @@ return [
     'sidebar' => [
         'conversations' => 'Conversations',
         'new_conversation' => 'New conversation',
+        'load_more' => 'Load more',
     ],
     'new_conversation' => [
         'title' => 'New conversation',
