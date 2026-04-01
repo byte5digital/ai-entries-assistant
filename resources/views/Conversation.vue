@@ -34,6 +34,12 @@ const props = defineProps({
 });
 
 const title = ref(props.conversationTitle);
+const sidebarOpen = ref(true);
+
+function toggleSidebar() {
+  sidebarOpen.value = !sidebarOpen.value;
+}
+
 const showRenameModal = ref(false);
 const renameInput = ref('');
 const renaming = ref(false);
@@ -195,70 +201,98 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="relative">
-    <Header>
-      <template #title>
-        <Dropdown>
-          <template #trigger>
-            <button class="cursor-pointer hover:text-primary transition-colors">{{ title }}</button>
-          </template>
-          <DropdownMenu>
-            <DropdownItem icon="pencil" text="Rename" @click="openRenameModal"/>
-            <DropdownSeparator/>
-            <DropdownItem icon="trash" text="Delete" variant="destructive" @click="showDeleteModal = true"/>
-          </DropdownMenu>
-        </Dropdown>
-      </template>
-    </Header>
-
-    <div
-        ref="scrollContainer"
-        class="overflow-y-auto px-4 py-4 pb-24"
-        @scroll="onScroll"
+  <div class="relative flex h-full">
+    <aside
+        :class="sidebarOpen ? 'w-72' : 'w-12'"
+        class="shrink-0 border-r border-gray-200 bg-gray-100 overflow-y-auto overflow-x-hidden transition-all duration-300 ease-in-out"
     >
-      <div v-if="loadingOlder" class="mb-4 text-center text-sm text-gray-400">
-        Loading older messages...
+      <div class="p-4 w-72">
+        <h2 class="text-sm font-semibold text-gray-700 mb-2">Sidebar</h2>
+        <p class="text-sm text-gray-500">
+          Placeholder content for the sidebar. This will be replaced with actual content later.
+        </p>
       </div>
+    </aside>
+
+    <Button
+        :icon="sidebarOpen ? 'chevron-left' : 'chevron-right'"
+        :style="{ left: sidebarOpen ? 'calc(18rem - 0.875rem)' : 'calc(3rem - 0.875rem)' }"
+        :title="sidebarOpen ? 'Close sidebar' : 'Open sidebar'"
+        class="absolute! top-4 z-10 transition-[left] duration-300 ease-in-out"
+        icon-only
+        round
+        size="sm"
+        @click="toggleSidebar"
+    />
+
+    <div class="relative flex-1 min-w-0 ml-8">
+
+      <Header>
+        <template #title>
+          <Dropdown>
+            <template #trigger>
+              <button class="cursor-pointer hover:text-primary  transition-colors">
+                {{ title }}
+              </button>
+            </template>
+            <DropdownMenu>
+              <DropdownItem icon="pencil" text="Rename" @click="openRenameModal"/>
+              <DropdownSeparator/>
+              <DropdownItem icon="trash" text="Delete" variant="destructive" @click="showDeleteModal = true"/>
+            </DropdownMenu>
+          </Dropdown>
+        </template>
+      </Header>
 
       <div
-          v-for="message in allMessages"
-          :key="message.id"
-          :class="message.role === 'user' ? 'justify-end' : 'justify-start'"
-          class="mb-4 flex"
+          ref="scrollContainer"
+          class="overflow-y-auto px-4 py-4 pb-24"
+          @scroll="onScroll"
       >
+        <div v-if="loadingOlder" class="mb-4 text-center text-sm text-gray-400">
+          Loading older messages...
+        </div>
+
         <div
-            :class="message.role === 'user'
+            v-for="message in allMessages"
+            :key="message.id"
+            :class="message.role === 'user' ? 'justify-end' : 'justify-start'"
+            class="mb-4 flex"
+        >
+          <div
+              :class="message.role === 'user'
               ? 'bg-primary text-gray-100'
               : 'bg-gray-100 text-gray-900'"
-            class="max-w-[75%] rounded-lg px-4 py-2"
-        >
-          <div v-if="message.role === 'ai_assistant'" class="prose prose-sm" v-html="marked(message.content)"></div>
-          <p v-else class="whitespace-pre-wrap text-sm">{{ message.content }}</p>
-          <p class="mt-1 text-xs text-gray-400">
-            {{ formatTime(message.created_at) }}
-          </p>
+              class="max-w-[75%] rounded-lg px-4 py-2"
+          >
+            <div v-if="message.role === 'ai_assistant'" class="prose prose-sm" v-html="marked(message.content)"></div>
+            <p v-else class="whitespace-pre-wrap text-sm">{{ message.content }}</p>
+            <p class="mt-1 text-xs text-gray-400">
+              {{ formatTime(message.created_at) }}
+            </p>
+          </div>
         </div>
+
+        <TypingIndicator v-if="waitingForReply"/>
       </div>
 
-      <TypingIndicator v-if="waitingForReply"/>
-    </div>
-
-    <div class="sticky bottom-0 bg-white ">
-      <Input
-          v-model="newMessage"
-          :disabled="sending"
-          :placeholder="__('ai-entries-assistant::frontend.conversation.input_placeholder')"
-          @keydown.enter="sendMessage"
-      >
-        <template #append>
-          <Button
-              :disabled="!hasNewInput || sending"
-              icon="ai-spark"
-              variant="ghost"
-              @click="sendMessage"
-          />
-        </template>
-      </Input>
+      <div class="sticky bottom-0 bg-white ">
+        <Input
+            v-model="newMessage"
+            :disabled="sending"
+            :placeholder="__('ai-entries-assistant::frontend.conversation.input_placeholder')"
+            @keydown.enter="sendMessage"
+        >
+          <template #append>
+            <Button
+                :disabled="!hasNewInput || sending"
+                icon="ai-spark"
+                variant="ghost"
+                @click="sendMessage"
+            />
+          </template>
+        </Input>
+      </div>
     </div>
   </div>
 
