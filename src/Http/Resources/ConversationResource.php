@@ -14,6 +14,8 @@ class ConversationResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
+            'short_title' => $this->short_title,
+            'short_title' => $this->short_title,
             'url' => cp_route('ai-entries-assistant.conversations.show', $this->id),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

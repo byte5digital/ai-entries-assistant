@@ -43,6 +43,10 @@ async function loadMoreConversations() {
 }
 
 
+function truncate(text, maxLength = 30) {
+  return text.length > maxLength ? text.slice(0, maxLength) + '…' : text;
+}
+
 function navigateToConversation(url) {
   router.visit(url);
 }
@@ -79,7 +83,7 @@ initConversations();
         <Button
             v-for="conversation in allConversations"
             :key="conversation.id"
-            :text="conversation.title || __('ai-entries-assistant::frontend.conversation.untitled')"
+            :text="conversation.short_title || __('ai-entries-assistant::frontend.conversation.untitled')"
             :variant="conversation.id === activeConversationId ? 'filled' : 'ghost'"
             class="w-full mb-0.5 truncate justify-start"
             @click="navigateToConversation(conversation.url)"

@@ -7,6 +7,7 @@ import Message from "./Message.vue";
 const emit = defineEmits(['toggle-sidebar']);
 const props = defineProps({
   sidebarOpen: {type: Boolean, default: true},
+  showSidebarToggle: {type: Boolean, default: true},
   startConversationUrl: String,
 });
 
@@ -36,6 +37,7 @@ function handleCreateConversation() {
   <Card class="flex flex-col flex-1 min-w-0 content-card divide-y divide-gray-200">
     <div class="flex items-center py-4 text-lg">
       <Button
+          v-if="showSidebarToggle"
           :title="sidebarOpen ? __('ai-entries-assistant::frontend.conversation.close_sidebar') : __('ai-entries-assistant::frontend.conversation.open_sidebar')"
           icon="burger-menu-no-border"
           icon-only
@@ -43,10 +45,12 @@ function handleCreateConversation() {
           variant="ghost"
           @click="emit('toggle-sidebar')"
       />
-      <h2>{{ __('ai-entries-assistant::frontend.new_conversation.title') }}</h2>
+      <h2 :class="showSidebarToggle? 'ml-0' : 'ml-2'">
+        {{ __('ai-entries-assistant::frontend.new_conversation.title') }}
+      </h2>
     </div>
     <div class="relative flex-1">
-      <div class="absolute inset-0 overflow-y-auto px-4 py-4">
+      <div class="absolute inset-0 overflow-y-auto py-4">
         <Message :message="welcomeMessage"/>
       </div>
     </div>

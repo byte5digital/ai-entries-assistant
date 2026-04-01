@@ -6,6 +6,7 @@ namespace Byte5\AiEntriesAssistant\Models;
 
 use Byte5\AiEntriesAssistant\Database\Factories\ConversationFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -43,6 +44,14 @@ final class Conversation extends Model
     public function latestMessage(): HasOne
     {
         return $this->hasOne(Message::class, 'conversation_id')->latestOfMany();
+    }
+
+    /** @return Attribute<string, never> */
+    protected function shortTitle(): Attribute
+    {
+        return Attribute::make(
+            get: fn (): string => \Illuminate\Support\Str::limit($this->title ?? '', 20),
+        );
     }
 
     /** @param Builder<self> $query */
