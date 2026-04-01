@@ -51,6 +51,7 @@ final class ConversationController extends CpController
             'messagesUrl' => cp_route('ai-entries-assistant.conversations.messages', $conversation->id),
             'storeMessageUrl' => cp_route('ai-entries-assistant.conversations.messages.store', $conversation->id),
             'updateTitleUrl' => cp_route('ai-entries-assistant.conversations.title.update', $conversation->id),
+            'deleteUrl' => cp_route('ai-entries-assistant.conversations.destroy', $conversation->id),
         ]);
     }
 
@@ -85,6 +86,15 @@ final class ConversationController extends CpController
         return response()->json([
             'title' => $conversation->title,
         ]);
+    }
+
+    public function destroy(
+        Conversation $conversation,
+        ConversationServiceInterface $conversationService,
+    ): RedirectResponse {
+        $conversationService->deleteConversation($conversation);
+
+        return redirect()->cpRoute('ai-entries-assistant.index');
     }
 
     public function storeMessage(

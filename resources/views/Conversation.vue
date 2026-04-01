@@ -1,10 +1,21 @@
 <script setup>
 import {computed, nextTick, onMounted, onUnmounted, ref} from 'vue';
 import axios from 'axios';
-import {Head} from '@statamic/cms/inertia';
-import {Button, Dropdown, DropdownItem, DropdownMenu, Header, Input, Modal, ModalClose} from '@statamic/cms/ui';
-import ExpandableTextarea from "../js/components/ExpandableTextarea.vue";
+import {router} from '@statamic/cms/inertia';
+import {
+  Button,
+  ConfirmationModal,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownSeparator,
+  Header,
+  Input,
+  Modal,
+  ModalClose
+} from '@statamic/cms/ui';
 import {usePolling} from "../js/composables/usePolling.js";
+import TypingIndicator from "../js/components/TypingIndicator.vue";
 import {marked} from 'marked';
 
 marked.setOptions({
@@ -19,12 +30,15 @@ const props = defineProps({
   messagesUrl: String,
   storeMessageUrl: String,
   updateTitleUrl: String,
+  deleteUrl: String,
 });
 
 const title = ref(props.conversationTitle);
 const showRenameModal = ref(false);
 const renameInput = ref('');
 const renaming = ref(false);
+const showDeleteModal = ref(false);
+const deleting = ref(false);
 
 const scrollContainer = ref(null);
 const allMessages = ref([]);
@@ -151,6 +165,15 @@ async function submitRename() {
   }
 }
 
+function deleteConversation() {
+  if (deleting.value) return;
+
+  deleting.value = true;
+  router.delete(props.deleteUrl, {
+    onFinish: () => deleting.value = false,
+  });
+}
+
 onMounted(() => {
   initMessages();
   nextTick(() => {
@@ -172,17 +195,17 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <Head :title="title"/>
-
-  <div class="flex flex-col" style="height: calc(100vh - 52px);">
+  <div class="relative">
     <Header>
       <template #title>
         <Dropdown>
           <template #trigger>
-            <button class="cursor-pointer hover:text-blue-500 transition-colors">{{ title }}</button>
+            <button class="cursor-pointer hover:text-primary transition-colors">{{ title }}</button>
           </template>
           <DropdownMenu>
             <DropdownItem icon="pencil" text="Rename" @click="openRenameModal"/>
+            <DropdownSeparator/>
+            <DropdownItem icon="trash" text="Delete" variant="destructive" @click="showDeleteModal = true"/>
           </DropdownMenu>
         </Dropdown>
       </template>
@@ -190,7 +213,7 @@ onUnmounted(() => {
 
     <div
         ref="scrollContainer"
-        class="min-h-0 flex-1 overflow-y-auto px-4 py-4"
+        class="overflow-y-auto px-4 py-4 pb-24"
         @scroll="onScroll"
     >
       <div v-if="loadingOlder" class="mb-4 text-center text-sm text-gray-400">
@@ -205,60 +228,43 @@ onUnmounted(() => {
       >
         <div
             :class="message.role === 'user'
-              ? 'bg-blue-500 text-white'
+              ? 'bg-primary text-gray-100'
               : 'bg-gray-100 text-gray-900'"
             class="max-w-[75%] rounded-lg px-4 py-2"
         >
           <div v-if="message.role === 'ai_assistant'" class="prose prose-sm" v-html="marked(message.content)"></div>
           <p v-else class="whitespace-pre-wrap text-sm">{{ message.content }}</p>
-          <p
-              :class="message.role === 'user' ? 'text-blue-200' : 'text-gray-400'"
-              class="mt-1 text-xs"
-          >
+          <p class="mt-1 text-xs text-gray-400">
             {{ formatTime(message.created_at) }}
           </p>
         </div>
       </div>
 
-      <div v-if="waitingForReply" class="mb-4 flex justify-start">
-        <div class="rounded-lg bg-gray-100 px-4 py-3">
-          <div class="flex items-center gap-1">
-            <span class="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400"
-                  style="animation-delay: 0ms;"></span>
-            <span class="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400"
-                  style="animation-delay: 150ms;"></span>
-            <span class="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400"
-                  style="animation-delay: 300ms;"></span>
-          </div>
-        </div>
-      </div>
+      <TypingIndicator v-if="waitingForReply"/>
     </div>
 
-    <div class="border-t border-gray-200 px-4 py-3">
-      <div class="flex items-end gap-2">
-        <div class="flex-1">
-          <ExpandableTextarea
-              v-model="newMessage"
-              :disabled="sending"
-              :max-rows="5"
-              :min-rows="1"
-              placeholder="Type a message..."
-              @submit="sendMessage"
+    <div class="sticky bottom-0 bg-white ">
+      <Input
+          v-model="newMessage"
+          :disabled="sending"
+          :placeholder="__('ai-entries-assistant::frontend.conversation.input_placeholder')"
+          @keydown.enter="sendMessage"
+      >
+        <template #append>
+          <Button
+              :disabled="!hasNewInput || sending"
+              icon="ai-spark"
+              variant="ghost"
+              @click="sendMessage"
           />
-        </div>
-        <Button
-            :disabled="!hasNewInput || sending"
-            round
-            text="Send"
-            variant="primary"
-            @click="sendMessage"
-        />
-      </div>
+        </template>
+      </Input>
     </div>
   </div>
 
   <Modal
       :open="showRenameModal"
+      blur
       title="Rename conversation"
       @update:open="showRenameModal = $event"
   >
@@ -271,7 +277,7 @@ onUnmounted(() => {
       />
     </form>
     <template #footer>
-      <div class="flex items-center justify-end gap-2">
+      <div class="flex items-center justify-end space-x-3 pt-3 pb-1">
         <ModalClose>
           <Button text="Cancel" variant="ghost"/>
         </ModalClose>
@@ -284,4 +290,16 @@ onUnmounted(() => {
       </div>
     </template>
   </Modal>
+
+  <ConfirmationModal
+      :busy="deleting"
+      :danger="true"
+      :open="showDeleteModal"
+      blur
+      body-text="Are you sure you want to delete this conversation? This action cannot be undone."
+      button-text="Delete"
+      title="Delete conversation"
+      @confirm="deleteConversation"
+      @update:open="showDeleteModal = $event"
+  />
 </template>

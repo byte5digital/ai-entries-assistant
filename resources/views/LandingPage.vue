@@ -1,7 +1,7 @@
 <script setup>
 import {computed} from 'vue';
 import {Head, Link, useForm} from '@statamic/cms/inertia';
-import {Button, Header} from '@statamic/cms/ui';
+import {Button, CardPanel, Header} from '@statamic/cms/ui';
 import ExpandableTextarea from "../js/components/ExpandableTextarea.vue";
 
 const props = defineProps({
@@ -28,28 +28,31 @@ function onMessageSubmitted() {
 
   <div class="flex h-full flex-col items-center justify-center">
     <Header :title="__('ai-entries-assistant::frontend.landing_page.title')" icon="ai-spark"/>
+    <CardPanel class="w-full">
+      <p class="mb-6 text-center text-sm text-gray-500">
+        {{ __('ai-entries-assistant::frontend.landing_page.subheading') }}
+        <template v-if="lastConversationUrl">
+          <br>
+          <Link :href="lastConversationUrl"
+                class="font-bold transition-colors hover:text-primary">
+            {{ __('ai-entries-assistant::frontend.landing_page.continue_conversation') }} &rarr;
+          </Link>
+        </template>
+      </p>
 
-    <p class="mb-6 text-center text-sm text-gray-500">
-      {{ __('ai-entries-assistant::frontend.landing_page.subheading') }}
-      <template v-if="lastConversationUrl">
-        <br>
-        <Link :href="lastConversationUrl"
-              class="text-blue-600 hover:text-blue-800">
-          {{ __('ai-entries-assistant::frontend.landing_page.continue_conversation') }} &rarr;
-        </Link>
-      </template>
-    </p>
-
-    <div class="w-full">
-      <ExpandableTextarea
-          v-model="form.content"
-          :disabled="form.processing"
-          placeholder="Type a message..."
-      />
-      <div class="mt-2 flex justify-end">
-        <Button :disabled="!hasInput || form.processing" round text="Send" variant="primary"
-                @click="onMessageSubmitted"/>
+      <div class="w-full">
+        <ExpandableTextarea
+            v-model="form.content"
+            :disabled="form.processing"
+            :placeholder="__('ai-entries-assistant::frontend.conversation.input_placeholder')"
+            @submit="hasInput && !form.processing && onMessageSubmitted()"
+        />
+        <div class="mt-2 flex justify-end">
+          <Button :disabled="!hasInput || form.processing" round text="Send" variant="primary"
+                  @click="onMessageSubmitted"/>
+        </div>
       </div>
-    </div>
+    </CardPanel>
+
   </div>
 </template>

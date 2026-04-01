@@ -12,6 +12,7 @@ Route::name('ai-entries-assistant.')->prefix('ai-entries-assistant')->group(func
         Route::post('/', [ConversationController::class, 'store'])->name('store');
         Route::get('/{conversation}', [ConversationController::class, 'show'])->name('show');
         Route::patch('/{conversation}/title', [ConversationController::class, 'updateTitle'])->name('title.update');
+        Route::delete('/{conversation}', [ConversationController::class, 'destroy'])->name('destroy');
         Route::get('/{conversation}/messages', [ConversationController::class, 'messages'])->name('messages');
         Route::post('/{conversation}/messages', [ConversationController::class, 'storeMessage'])->name('messages.store');
     });

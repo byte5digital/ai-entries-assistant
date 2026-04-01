@@ -1,2 +1,7 @@
 @import 'tailwindcss';
+
 @plugin '@tailwindcss/typography';
+
+@theme inline {
+    --color-primary: var(--theme-color-primary);
+}
