@@ -1,58 +1,37 @@
 <script setup>
-import {computed} from 'vue';
-import {Head, Link, useForm} from '@statamic/cms/inertia';
-import {Button, CardPanel, Header} from '@statamic/cms/ui';
-import ExpandableTextarea from "../js/components/ExpandableTextarea.vue";
+import {ref} from 'vue';
+import {Header, Panel} from '@statamic/cms/ui';
+import NewConversation from "../js/components/NewConversation.vue";
+import ConversationSidebar from "../js/components/ConversationSidebar.vue";
 
 const props = defineProps({
-  lastConversationUrl: String,
+  initialConversations: Object,
+  conversationsUrl: String,
   startConversationUrl: String,
 });
+const sidebarRef = ref(null);
+const sidebarOpen = ref(true);
 
-const form = useForm({
-  content: '',
-  conversation_id: null,
-});
-
-const hasInput = computed(() => form.content.trim().length > 0);
-
-function onMessageSubmitted() {
-  form.post(props.startConversationUrl, {
-    preserveScroll: true,
-  });
-}
 </script>
 
+
 <template>
-  <Head :title="__('ai-entries-assistant::frontend.landing_page.title')"/>
-
-  <div class="flex h-full flex-col items-center justify-center">
+  <div class="h-full flex flex-col">
     <Header :title="__('ai-entries-assistant::frontend.landing_page.title')" icon="ai-spark"/>
-    <CardPanel class="w-full">
-      <p class="mb-6 text-center text-sm text-gray-500">
-        {{ __('ai-entries-assistant::frontend.landing_page.subheading') }}
-        <template v-if="lastConversationUrl">
-          <br>
-          <Link :href="lastConversationUrl"
-                class="font-bold transition-colors hover:text-primary">
-            {{ __('ai-entries-assistant::frontend.landing_page.continue_conversation') }} &rarr;
-          </Link>
-        </template>
-      </p>
+    <Panel class="flex flex-row flex-1 min-h-0">
+      <ConversationSidebar
+          ref="sidebarRef"
+          :active-conversation-id="null"
+          :conversations-url="conversationsUrl"
+          :initial-conversations="initialConversations"
+          :open="sidebarOpen"
+      />
 
-      <div class="w-full">
-        <ExpandableTextarea
-            v-model="form.content"
-            :disabled="form.processing"
-            :placeholder="__('ai-entries-assistant::frontend.conversation.input_placeholder')"
-            @submit="hasInput && !form.processing && onMessageSubmitted()"
-        />
-        <div class="mt-2 flex justify-end">
-          <Button :disabled="!hasInput || form.processing" round text="Send" variant="primary"
-                  @click="onMessageSubmitted"/>
-        </div>
-      </div>
-    </CardPanel>
-
+      <NewConversation
+          :sidebar-open="sidebarOpen"
+          :start-conversation-url="startConversationUrl"
+          @toggle-sidebar="sidebarOpen = !sidebarOpen"
+      />
+    </Panel>
   </div>
 </template>

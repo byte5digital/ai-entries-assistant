@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Byte5\AiEntriesAssistant\Http\Controllers;
 
+use Byte5\AiEntriesAssistant\Http\Resources\ConversationResource;
+use Byte5\AiEntriesAssistant\Models\Conversation;
 use Byte5\AiEntriesAssistant\Repositories\Contracts\ConversationRepositoryInterface;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -14,15 +16,17 @@ final class LandingPageController extends CpController
 {
     public function index(Request $request, ConversationRepositoryInterface $conversationRepository): Response
     {
-        $userIdentifier = $request->user()?->getAuthIdentifier();
-        if($userIdentifier){
-            $lastConversation = $conversationRepository->getLastConversation($userIdentifier);
-        }
-        return Inertia::render('ai-entries-assistant::LandingPage',[
-            'lastConversationUrl' => isset($lastConversation)
-                ? cp_route('ai-entries-assistant.conversations.show', $lastConversation->id)
-                : null,
+        $userId = $request->user()->getAuthIdentifier();
+
+        $conversations = Conversation::query()
+            ->forUser($userId)
+            ->latest()
+            ->cursorPaginate(20);
+        
+        return Inertia::render('ai-entries-assistant::LandingPage', [
             'startConversationUrl' => cp_route('ai-entries-assistant.conversations.store'),
+            'conversationsUrl' => cp_route('ai-entries-assistant.conversations.index'),
+            'initialConversations' => ConversationResource::collection($conversations)->response($request)->getData(true),
         ]);
     }
 }

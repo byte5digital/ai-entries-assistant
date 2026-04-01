@@ -16,7 +16,7 @@ import {marked} from 'marked';
 import TypingIndicator from "./TypingIndicator.vue";
 import {useMessages} from "../composables/useMessages.js";
 import {useConversationActions} from "../composables/useConversationActions.js";
-import {formatTime} from "../utils/formatTime.js";
+import Message from "./Message.vue";
 
 marked.setOptions({
   breaks: true,
@@ -131,27 +131,7 @@ onUnmounted(() => {
           {{ __('ai-entries-assistant::frontend.conversation.start_of_conversation') }}
         </div>
 
-        <div
-            v-for="message in allMessages"
-            :key="message.id"
-            :class="message.role === 'user' ? 'justify-end' : 'justify-start'"
-            class="mb-4 flex"
-        >
-          <div
-              :class="message.role === 'user'
-                    ? 'bg-primary text-gray-100'
-                    : 'bg-gray-100 text-gray-900'"
-              class="max-w-[75%] rounded-lg px-4 py-2"
-          >
-            <div v-if="message.role === 'ai_assistant'" class="prose prose-sm"
-                 v-html="marked(message.content)"></div>
-            <p v-else class="whitespace-pre-wrap text-sm">{{ message.content }}</p>
-            <p class="mt-1 text-xs text-gray-400">
-              {{ formatTime(message.created_at) }}
-            </p>
-          </div>
-        </div>
-
+        <Message v-for="message in allMessages" :key="message.id" :message="message" class="mb-4"/>
         <TypingIndicator v-if="waitingForReply"/>
       </div>
     </div>

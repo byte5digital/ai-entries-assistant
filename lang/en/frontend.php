@@ -39,5 +39,9 @@ return [
     'sidebar' => [
         'conversations' => 'Conversations',
         'new_conversation' => 'New conversation',
+    ],
+    'new_conversation' => [
+        'title' => 'New conversation',
+        'welcome_message' => 'Hi! I am your **AI assistant**. Ask me anything about your content, and I will try my best to answer.',
     ]
 ];

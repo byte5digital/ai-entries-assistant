@@ -3,7 +3,7 @@ import axios from 'axios';
 import {usePolling} from './usePolling.js';
 
 export function useMessages(messagesUrl, initialMessages) {
-    const messagesContainer = shallowRef(null);
+    const messageContainer = shallowRef(null);
     const allMessages = ref([]);
     const nextCursor = shallowRef(null);
     const hasMore = shallowRef(false);
@@ -44,7 +44,7 @@ export function useMessages(messagesUrl, initialMessages) {
     }
 
     function scrollToBottom() {
-        const el = messagesContainer.value;
+        const el = messageContainer.value;
         if (el) {
             el.scrollTop = el.scrollHeight;
         }
@@ -52,7 +52,7 @@ export function useMessages(messagesUrl, initialMessages) {
 
     async function loadIfNotScrollable() {
         await nextTick();
-        const el = messagesContainer.value;
+        const el = messageContainer.value;
         if (el && hasMore.value && el.scrollHeight <= el.clientHeight) {
             loadOlderMessages();
         }
@@ -62,7 +62,7 @@ export function useMessages(messagesUrl, initialMessages) {
         if (loadingOlder.value || !hasMore.value) return;
 
         loadingOlder.value = true;
-        const el = messagesContainer.value;
+        const el = messageContainer.value;
         const prevHeight = el.scrollHeight;
 
         try {
@@ -106,14 +106,14 @@ export function useMessages(messagesUrl, initialMessages) {
     }
 
     function onScroll() {
-        const el = messagesContainer.value;
+        const el = messageContainer.value;
         if (el && el.scrollTop < 50 && hasMore.value) {
             loadOlderMessages();
         }
     }
 
     return {
-        messagesContainer,
+        messageContainer,
         allMessages,
         hasMore,
         loadingOlder,

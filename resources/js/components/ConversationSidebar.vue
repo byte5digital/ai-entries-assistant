@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from 'vue';
+import {ref, shallowRef} from 'vue';
 import axios from 'axios';
 import {router} from '@statamic/cms/inertia';
 import {Button} from '@statamic/cms/ui';
@@ -12,11 +12,11 @@ const props = defineProps({
   open: Boolean,
 });
 
-const sidebarScrollContainer = ref(null);
+const sidebarScrollContainer = shallowRef(null);
 const allConversations = ref([]);
-const conversationsNextCursor = ref(null);
-const conversationsHasMore = ref(false);
-const loadingMoreConversations = ref(false);
+const conversationsNextCursor = shallowRef(null);
+const conversationsHasMore = shallowRef(false);
+const loadingMoreConversations = shallowRef(false);
 
 function initConversations() {
   const data = props.initialConversations?.data ?? [];
@@ -76,33 +76,30 @@ initConversations();
       class="shrink-0 overflow-y-auto overflow-x-hidden transition-all duration-300 ease-in-out"
       @scroll="onSidebarScroll"
   >
-    <div class="w-72 p-3">
+    <div class="w-72 px-3 pt-5 space-y-5">
       <Button
           :text="__('ai-entries-assistant::frontend.sidebar.new_conversation')"
-          class="w-full mb-2"
+          class="w-full"
           icon="add-circle"
-          size="sm"
+          variant="primary"
           @click="navigateToConversation(landingPageUrl)"
       />
+      <div>
+        <h2 class="px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+          {{ __('ai-entries-assistant::frontend.sidebar.conversations') }}
+        </h2>
+        <Button
+            v-for="conversation in allConversations"
+            :key="conversation.id"
+            :text="conversation.title || __('ai-entries-assistant::frontend.conversation.untitled')"
+            :variant="conversation.id === activeConversationId ? 'filled' : 'ghost'"
+            class="w-full mb-0.5 truncate justify-start"
+            @click="navigateToConversation(conversation.url)"
+        />
 
-      <h2 class="px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-        {{ __('ai-entries-assistant::frontend.sidebar.conversations') }}
-      </h2>
-
-      <button
-          v-for="conversation in allConversations"
-          :key="conversation.id"
-          :class="conversation.id === activeConversationId
-            ? 'bg-white shadow-sm text-gray-900'
-            : 'text-gray-600 hover:bg-gray-200'"
-          class="w-full text-left rounded-md px-2 py-2 mb-0.5 text-sm truncate transition-colors cursor-pointer"
-          @click="navigateToConversation(conversation.url)"
-      >
-        {{ conversation.title || __('ai-entries-assistant::frontend.conversation.untitled') }}
-      </button>
-
-      <div v-if="loadingMoreConversations" class="py-2 text-center text-xs text-gray-400">
-        {{ __('ai-entries-assistant::frontend.conversation.loading') }}
+        <div v-if="loadingMoreConversations" class="py-2 text-center text-xs text-gray-400">
+          {{ __('ai-entries-assistant::frontend.conversation.loading') }}
+        </div>
       </div>
     </div>
   </aside>
