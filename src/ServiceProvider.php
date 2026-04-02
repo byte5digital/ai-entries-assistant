@@ -30,13 +30,8 @@ final class ServiceProvider extends AddonServiceProvider
     public function bootAddon(): void
     {
         $this->publishes([
-            __DIR__.'/../config/ai-entries-assistant.php' => config_path('ai-entries-assistant.php'),
-        ], 'ai-entries-assistant-config');
-
-        $this->publishes([
             __DIR__.'/../resources/views' => resource_path('views/vendor/ai-entries-assistant'),
         ], 'ai-entries-assistant-views');
-        $this->loadTranslationsFrom(__DIR__.'/../lang', 'ai-entries-assistant');
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->bootNav();
         $this->bootPermissions();
@@ -77,7 +72,6 @@ final class ServiceProvider extends AddonServiceProvider
     {
         parent::register();
 
-        $this->mergeConfigFrom(__DIR__.'/../config/ai-entries-assistant.php', 'ai-entries-assistant');
         $this->app->bind(ConversationRepositoryInterface::class, ConversationRepository::class);
         $this->app->bind(ConversationServiceInterface::class, ConversationService::class);
         $this->app->bind(MessageServiceInterface::class, MessageService::class);
