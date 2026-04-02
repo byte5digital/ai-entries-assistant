@@ -6,7 +6,7 @@ import {Button} from '@statamic/cms/ui';
 
 const props = defineProps({
   initialConversations: Object,
-  conversationsUrl: String,
+  conversationsIndexUrl: String,
   landingPageUrl: String,
   activeConversationId: String,
   open: Boolean,
@@ -32,7 +32,7 @@ async function loadMoreConversations() {
   loadingMoreConversations.value = true;
 
   try {
-    const url = `${props.conversationsUrl}?cursor=${conversationsNextCursor.value}`;
+    const url = `${props.conversationsIndexUrl}?cursor=${conversationsNextCursor.value}`;
     const {data: json} = await axios.get(url);
     const moreConversations = json.data ?? [];
 

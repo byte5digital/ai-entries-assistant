@@ -20,12 +20,12 @@ export function useConversationActions(initialTitle, updateTitleUrl, deleteUrl) 
 
         renaming.value = true;
         try {
-            const {data} = await axios.patch(updateTitleUrl, {
+            const {data: response} = await axios.patch(updateTitleUrl, {
                 title: renameInput.value.trim(),
             });
-            title.value = data.title;
+            title.value = response.data.title;
             showRenameModal.value = false;
-            return data.title;
+            return response.data.title;
         } finally {
             renaming.value = false;
         }

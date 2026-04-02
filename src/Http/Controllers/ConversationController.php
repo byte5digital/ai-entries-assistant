@@ -10,8 +10,6 @@ use Byte5\AiEntriesAssistant\Http\Resources\ConversationResource;
 use Byte5\AiEntriesAssistant\Http\Resources\MessageResource;
 use Byte5\AiEntriesAssistant\Models\Conversation;
 use Byte5\AiEntriesAssistant\Services\Contracts\ConversationServiceInterface;
-use Byte5\AiEntriesAssistant\Services\Contracts\MessageServiceInterface;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -65,45 +63,25 @@ final class ConversationController extends CpController
             'initialMessages' => MessageResource::collection($messages)->response($request)->getData(true),
             'initialConversations' => ConversationResource::collection($conversations)->response($request)->getData(true),
             'landingPageUrl' => cp_route('ai-entries-assistant.index'),
-            'conversationsUrl' => cp_route('ai-entries-assistant.conversations.index'),
-            'messagesUrl' => cp_route('ai-entries-assistant.conversations.messages', $conversation->id),
-            'storeMessageUrl' => cp_route('ai-entries-assistant.conversations.messages.store', $conversation->id),
-            'updateTitleUrl' => cp_route('ai-entries-assistant.conversations.title.update', $conversation->id),
-            'deleteUrl' => cp_route('ai-entries-assistant.conversations.destroy', $conversation->id),
+            'conversationsIndexUrl' => cp_route('ai-entries-assistant.conversations.index'),
+            'conversationMessagesIndexUrl' => cp_route('ai-entries-assistant.conversations.messages.index', $conversation->id),
+            'conversationMessagesStoreUrl' => cp_route('ai-entries-assistant.conversations.messages.store', $conversation->id),
+            'conversationTitleUpdateUrl' => cp_route('ai-entries-assistant.conversations.title.update', $conversation->id),
+            'conversationDestroyUrl' => cp_route('ai-entries-assistant.conversations.destroy', $conversation->id),
         ]);
-    }
-
-    public function messages(Request $request, Conversation $conversation): AnonymousResourceCollection
-    {
-        $query = $conversation->messages();
-
-        if ($request->has('since')) {
-            $sinceMessage = $conversation->messages()->find($request->get('since'));
-
-            if ($sinceMessage) {
-                $query = $query->where('created_at', '>', $sinceMessage->created_at)
-                    ->orderBy('created_at');
-            }
-
-            return MessageResource::collection($query->get());
-        }
-
-        return MessageResource::collection($query->latest()->cursorPaginate(20));
     }
 
     public function updateTitle(
         UpdateConversationTitleRequest $request,
         Conversation $conversation,
         ConversationServiceInterface $conversationService,
-    ): JsonResponse {
+    ): ConversationResource {
         $conversationService->updateTitle(
             $conversation,
             $request->validated('title'),
         );
 
-        return response()->json([
-            'title' => $conversation->title,
-        ]);
+        return new ConversationResource($conversation);
     }
 
     public function destroy(
@@ -113,21 +91,5 @@ final class ConversationController extends CpController
         $conversationService->deleteConversation($conversation);
 
         return redirect()->cpRoute('ai-entries-assistant.index');
-    }
-
-    public function storeMessage(
-        AddMessageToConversationRequest $request,
-        Conversation $conversation,
-        MessageServiceInterface $messageService,
-    ): MessageResource {
-        $userId = (string) $request->user()->getAuthIdentifier();
-
-        $message = $messageService->createUserMessage(
-            $conversation->id,
-            $userId,
-            $request->validated('content'),
-        );
-
-        return new MessageResource($message);
     }
 }

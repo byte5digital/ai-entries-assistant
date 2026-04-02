@@ -27,10 +27,10 @@ const props = defineProps({
   conversationId: String,
   conversationTitle: String,
   initialMessages: Object,
-  messagesUrl: String,
-  storeMessageUrl: String,
-  updateTitleUrl: String,
-  deleteUrl: String,
+  conversationMessagesIndexUrl: String,
+  conversationMessagesStoreUrl: String,
+  conversationTitleUpdateUrl: String,
+  conversationDestroyUrl: String,
   sidebarOpen: Boolean,
 });
 
@@ -51,7 +51,7 @@ const {
   loadIfNotScrollable,
   sendMessage,
   onScroll,
-} = useMessages(props.messagesUrl, props.initialMessages);
+} = useMessages(props.conversationMessagesIndexUrl, props.initialMessages);
 
 const {
   title,
@@ -63,7 +63,7 @@ const {
   openRenameModal,
   submitRename,
   deleteConversation,
-} = useConversationActions(props.conversationTitle, props.updateTitleUrl, props.deleteUrl);
+} = useConversationActions(props.conversationTitle, props.conversationTitleUpdateUrl, props.conversationDestroyUrl);
 
 async function handleRename() {
   const newTitle = await submitRename();
@@ -73,7 +73,7 @@ async function handleRename() {
 }
 
 function handleSendMessage() {
-  sendMessage(props.storeMessageUrl);
+  sendMessage(props.conversationMessagesStoreUrl);
 }
 
 onMounted(() => {

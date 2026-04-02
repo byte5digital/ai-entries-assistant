@@ -10,11 +10,11 @@ const props = defineProps({
   initialMessages: Object,
   initialConversations: Object,
   landingPageUrl: String,
-  conversationsUrl: String,
-  messagesUrl: String,
-  storeMessageUrl: String,
-  updateTitleUrl: String,
-  deleteUrl: String,
+  conversationsIndexUrl: String,
+  conversationMessagesIndexUrl: String,
+  conversationMessagesStoreUrl: String,
+  conversationTitleUpdateUrl: String,
+  conversationDestroyUrl: String,
 });
 
 const mdBreakpoint = getComputedStyle(document.documentElement).getPropertyValue('--breakpoint-md');
@@ -37,7 +37,7 @@ function onTitleUpdated(newTitle) {
       <ConversationSidebar
           ref="sidebarRef"
           :active-conversation-id="conversationId"
-          :conversations-url="conversationsUrl"
+          :conversations-index-url="conversationsIndexUrl"
           :initial-conversations="initialConversations"
           :landing-page-url="landingPageUrl"
           :open="sidebarOpen"
@@ -47,12 +47,12 @@ function onTitleUpdated(newTitle) {
       <ConversationComponent
           :conversation-id="conversationId"
           :conversation-title="conversationTitle"
-          :delete-url="deleteUrl"
+          :conversation-destroy-url="conversationDestroyUrl"
           :initial-messages="initialMessages"
-          :messages-url="messagesUrl"
+          :conversation-messages-index-url="conversationMessagesIndexUrl"
+          :conversation-messages-store-url="conversationMessagesStoreUrl"
           :sidebar-open="sidebarOpen"
-          :store-message-url="storeMessageUrl"
-          :update-title-url="updateTitleUrl"
+          :conversation-title-update-url="conversationTitleUpdateUrl"
           @toggle-sidebar="toggleSidebar"
           @title-updated="onTitleUpdated"
       />

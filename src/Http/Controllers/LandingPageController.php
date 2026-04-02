@@ -26,7 +26,7 @@ final class LandingPageController extends CpController
         return Inertia::render('ai-entries-assistant::LandingPage', [
             'landingPageUrl' => cp_route('ai-entries-assistant.index'),
             'startConversationUrl' => cp_route('ai-entries-assistant.conversations.store'),
-            'conversationsUrl' => cp_route('ai-entries-assistant.conversations.index'),
+            'conversationsIndexUrl' => cp_route('ai-entries-assistant.conversations.index'),
             'initialConversations' => ConversationResource::collection($conversations)->response($request)->getData(true),
         ]);
     }

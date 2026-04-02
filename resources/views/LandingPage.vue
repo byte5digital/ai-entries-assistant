@@ -6,7 +6,7 @@ import ConversationSidebar from "../js/components/ConversationSidebar.vue";
 
 const props = defineProps({
   initialConversations: Object,
-  conversationsUrl: String,
+  conversationsIndexUrl: String,
   landingPageUrl: String,
   startConversationUrl: String,
 });
@@ -27,7 +27,7 @@ const sidebarOpen = ref(window.matchMedia(`(min-width: ${mdBreakpoint})`).matche
           v-if="hasConversations"
           ref="sidebarRef"
           :active-conversation-id="null"
-          :conversations-url="conversationsUrl"
+          :conversations-index-url="conversationsIndexUrl"
           :initial-conversations="initialConversations"
           :landing-page-url="landingPageUrl"
           :open="sidebarOpen"
