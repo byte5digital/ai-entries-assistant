@@ -12,6 +12,8 @@ const props = defineProps({
   open: Boolean,
 });
 
+const emit = defineEmits(['close']);
+
 const allConversations = ref([]);
 const conversationsNextCursor = shallowRef(null);
 const conversationsHasMore = shallowRef(false);
@@ -65,10 +67,19 @@ initConversations();
 
 <template>
   <aside
-      :class="open ? 'w-72' : 'w-0'"
-      class="shrink-0 overflow-y-auto overflow-x-hidden transition-all duration-300 ease-in-out"
+      :class="open ? 'max-md:w-full md:w-72' : 'w-0'"
+      class="max-md:absolute max-md:inset-y-0 max-md:left-0 max-md:z-10 shrink-0 overflow-y-auto overflow-x-hidden transition-all duration-200 ease-in-out"
   >
-    <div class="w-72 px-3 pt-5 space-y-5">
+    <div class="w-full md:w-72 px-3 pt-5 space-y-5 ">
+      <div class="text-right md:hidden">
+        <Button
+            icon="x"
+            icon-only
+            size="sm"
+            variant="ghost"
+            @click="emit('close')"
+        />
+      </div>
       <Button
           :text="__('ai-entries-assistant::frontend.sidebar.new_conversation')"
           class="w-full"
@@ -97,8 +108,8 @@ initConversations();
             v-if="conversationsHasMore && !loadingMoreConversations"
             :text="__('ai-entries-assistant::frontend.sidebar.load_more')"
             class="w-full mt-1"
-            variant="ghost"
             size="sm"
+            variant="ghost"
             @click="loadMoreConversations"
         />
       </div>

@@ -34,7 +34,8 @@ function handleCreateConversation() {
 <template>
   <Head :title="__('ai-entries-assistant::frontend.conversations.welcome_message')"/>
 
-  <Card class="flex flex-col flex-1 min-w-0 content-card divide-y divide-gray-200">
+  <Card :class="{ 'max-md:opacity-0 max-md:pointer-events-none': sidebarOpen }"
+        class="flex flex-col flex-1 min-w-0 content-card divide-y divide-gray-200 transition-opacity duration-500">
     <div class="flex items-center py-4 text-lg">
       <Button
           v-if="showSidebarToggle"
