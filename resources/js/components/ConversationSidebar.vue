@@ -68,10 +68,10 @@ initConversations();
 <template>
   <aside
       :class="open ? 'max-md:w-full md:w-72' : 'w-0'"
-      class="max-md:absolute max-md:inset-y-0 max-md:left-0 max-md:z-10 shrink-0 overflow-y-auto overflow-x-hidden transition-all duration-200 ease-in-out"
+      class="max-md:absolute max-md:inset-y-0 max-md:left-0 max-md:z-10 shrink-0 overflow-hidden transition-all duration-200 ease-in-out"
   >
-    <div class="w-full md:w-72 px-3 pt-5 space-y-5 ">
-      <div class="text-right md:hidden">
+    <div class="flex flex-col h-full w-full md:w-72 px-3 pt-5">
+      <div class="text-right md:hidden mb-5">
         <Button
             icon="x"
             icon-only
@@ -82,12 +82,13 @@ initConversations();
       </div>
       <Button
           :text="__('ai-entries-assistant::frontend.sidebar.new_conversation')"
-          class="w-full"
+          class="w-full mb-5 shrink-0"
           icon="add-circle"
           variant="primary"
           @click="navigateToConversation(landingPageUrl)"
       />
-      <div>
+      <div class="relative flex-1">
+      <div class="absolute inset-0 overflow-y-auto">
         <h2 class="px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
           {{ __('ai-entries-assistant::frontend.sidebar.conversations') }}
         </h2>
@@ -112,6 +113,7 @@ initConversations();
             variant="ghost"
             @click="loadMoreConversations"
         />
+      </div>
       </div>
     </div>
   </aside>
