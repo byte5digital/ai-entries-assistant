@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(grep -E \"\\\\.md$|\\\\.php$|^d\")",
-      "Bash(grep -r \"chatbot\\\\|Chatbot\\\\|ai-entries-chatbot\\\\|AiEntriesChatbot\\\\|AI Chatbot\" /Users/jureknezovic/development/ai-entries-chatbot --include=*.yaml --include=*.yml --include=*.env* --include=*.md --include=*.lock)",
-      "Bash(git mv:*)"
-    ]
-  }
-}
