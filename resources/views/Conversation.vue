@@ -17,7 +17,8 @@ const props = defineProps({
   deleteUrl: String,
 });
 
-const sidebarOpen = ref(true);
+const mdBreakpoint = getComputedStyle(document.documentElement).getPropertyValue('--breakpoint-md');
+const sidebarOpen = ref(window.matchMedia(`(min-width: ${mdBreakpoint})`).matches);
 const sidebarRef = ref(null);
 
 function toggleSidebar() {

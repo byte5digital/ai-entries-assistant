@@ -13,7 +13,8 @@ const props = defineProps({
 
 const hasConversations = computed(() => (props.initialConversations?.data?.length ?? 0) > 0);
 const sidebarRef = ref(null);
-const sidebarOpen = ref(true);
+const mdBreakpoint = getComputedStyle(document.documentElement).getPropertyValue('--breakpoint-md');
+const sidebarOpen = ref(window.matchMedia(`(min-width: ${mdBreakpoint})`).matches);
 
 </script>
 
