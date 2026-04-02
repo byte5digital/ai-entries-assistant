@@ -23,6 +23,6 @@ class ConversationFactory extends Factory
 
     public function withoutTitle(): static
     {
-        return $this->state(fn() => ['title' => null]);
+        return $this->state(fn (): array => ['title' => null]);
     }
 }

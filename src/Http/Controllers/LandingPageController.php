@@ -22,7 +22,7 @@ final class LandingPageController extends CpController
             ->forUser($userId)
             ->latest()
             ->cursorPaginate(20);
-        
+
         return Inertia::render('ai-entries-assistant::LandingPage', [
             'landingPageUrl' => cp_route('ai-entries-assistant.index'),
             'startConversationUrl' => cp_route('ai-entries-assistant.conversations.store'),

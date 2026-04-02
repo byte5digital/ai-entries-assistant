@@ -7,6 +7,7 @@ namespace Byte5\AiEntriesAssistant\Http\Controllers;
 use Byte5\AiEntriesAssistant\Http\Requests\AddMessageToConversationRequest;
 use Byte5\AiEntriesAssistant\Http\Resources\MessageResource;
 use Byte5\AiEntriesAssistant\Models\Conversation;
+use Byte5\AiEntriesAssistant\Models\Message;
 use Byte5\AiEntriesAssistant\Services\Contracts\MessageServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -19,11 +20,10 @@ final class MessageController extends CpController
         $query = $conversation->messages();
 
         if ($request->has('since')) {
-            $sinceMessage = $conversation->messages()->find($request->get('since'));
+            $sinceMessage = $conversation->messages()->find((string) $request->get('since'));
 
-            if ($sinceMessage) {
-                $query = $query->where('created_at', '>', $sinceMessage->created_at)
-                    ->orderBy('created_at');
+            if ($sinceMessage instanceof Message) {
+                $query = $query->where('created_at', '>', $sinceMessage->created_at)->oldest();
             }
 
             return MessageResource::collection($query->get());

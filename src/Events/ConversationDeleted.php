@@ -14,6 +14,5 @@ final readonly class ConversationDeleted
         public string $conversationId,
         public string $userId,
         public ?string $title,
-    ) {
-    }
+    ) {}
 }

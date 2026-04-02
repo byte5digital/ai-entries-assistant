@@ -8,6 +8,11 @@ parameters:
         - src/
         - database/
     ignoreErrors:
-        # Ignore errors about missing return types in Laravel's magic methods
+        -
+            message: '#Property Byte5\\AiEntriesAssistant\\ServiceProvider::\$vite#'
+            identifier: property.defaultValue
+        -
+            message: '#Call to an undefined method Statamic\\CP\\Navigation\\Nav::content\(\)#'
+            identifier: method.notFound
     excludePaths:
         # Ignore errors in the vendor directory

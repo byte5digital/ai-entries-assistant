@@ -14,6 +14,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Inertia\Inertia;
+use Inertia\Response;
 use Statamic\Http\Controllers\CP\CpController;
 
 final class ConversationController extends CpController
@@ -44,7 +45,7 @@ final class ConversationController extends CpController
         return redirect()->cpRoute('ai-entries-assistant.conversations.show', $conversation->id);
     }
 
-    public function show(Request $request, Conversation $conversation)
+    public function show(Request $request, Conversation $conversation): Response
     {
         $userId = (string) $request->user()->getAuthIdentifier();
 
@@ -64,9 +65,12 @@ final class ConversationController extends CpController
             'initialConversations' => ConversationResource::collection($conversations)->response($request)->getData(true),
             'landingPageUrl' => cp_route('ai-entries-assistant.index'),
             'conversationsIndexUrl' => cp_route('ai-entries-assistant.conversations.index'),
-            'conversationMessagesIndexUrl' => cp_route('ai-entries-assistant.conversations.messages.index', $conversation->id),
-            'conversationMessagesStoreUrl' => cp_route('ai-entries-assistant.conversations.messages.store', $conversation->id),
-            'conversationTitleUpdateUrl' => cp_route('ai-entries-assistant.conversations.title.update', $conversation->id),
+            'conversationMessagesIndexUrl' => cp_route('ai-entries-assistant.conversations.messages.index',
+                $conversation->id),
+            'conversationMessagesStoreUrl' => cp_route('ai-entries-assistant.conversations.messages.store',
+                $conversation->id),
+            'conversationTitleUpdateUrl' => cp_route('ai-entries-assistant.conversations.title.update',
+                $conversation->id),
             'conversationDestroyUrl' => cp_route('ai-entries-assistant.conversations.destroy', $conversation->id),
         ]);
     }

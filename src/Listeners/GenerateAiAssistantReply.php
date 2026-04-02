@@ -10,6 +10,8 @@ use Byte5\AiEntriesAssistant\Services\Contracts\MessageServiceInterface;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
+use Laravel\Ai\Responses\StructuredAgentResponse;
+use Throwable;
 
 final class GenerateAiAssistantReply implements ShouldQueue
 {
@@ -33,9 +35,8 @@ final class GenerateAiAssistantReply implements ShouldQueue
             ->forConversation($event->conversation->id)
             ->prompt($event->message->content);
 
-        $content = isset($response['answer'])
-            ? $response['answer']
-            : (string) $response;
+        $content = $response instanceof StructuredAgentResponse
+            ? $response['answer'] : (string) $response;
 
         $this->messageService->createAiAssistantMessage(
             $event->conversation->id,
@@ -48,7 +49,7 @@ final class GenerateAiAssistantReply implements ShouldQueue
         return config('ai-entries-assistant.jobs_queue', 'default');
     }
 
-    public function failed(UserMessageAddedToConversation $event, \Throwable $exception): void
+    public function failed(UserMessageAddedToConversation $event, Throwable $exception): void
     {
         Log::error('Failed to generate AI assistant reply', [
             'conversation_id' => $event->conversation->id,

@@ -14,6 +14,5 @@ final readonly class ConversationStarted
     public function __construct(
         public Conversation $conversation,
         public string $userId,
-    ) {
-    }
+    ) {}
 }

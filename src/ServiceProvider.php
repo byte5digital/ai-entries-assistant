@@ -66,8 +66,8 @@ final class ServiceProvider extends AddonServiceProvider
             return;
         }
 
-        Broadcast::channel('conversation.{conversationId}', function ($user, string $conversationId) {
-            $conversation = Conversation::find($conversationId);
+        Broadcast::channel('conversation.{conversationId}', function ($user, string $conversationId): bool {
+            $conversation = Conversation::query()->find($conversationId);
 
             return $conversation && $conversation->user_id === $user->getAuthIdentifier();
         });

@@ -27,11 +27,11 @@ class MessageFactory extends Factory
 
     public function fromUser(): static
     {
-        return $this->state(fn() => ['role' => MessageRole::User]);
+        return $this->state(fn (): array => ['role' => MessageRole::User]);
     }
 
     public function fromAiAssistant(): static
     {
-        return $this->state(fn() => ['role' => MessageRole::AiAssistant]);
+        return $this->state(fn (): array => ['role' => MessageRole::AiAssistant]);
     }
 }

@@ -10,14 +10,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('ai_entry_assistant_conversations', function (Blueprint $table) {
+        Schema::create('ai_entry_assistant_conversations', function (Blueprint $table): void {
             $table->uuid('id')->primary()->comment('Unique conversation identifier');
             $table->string('user_id', 36)->index()->comment('Statamic user UUID');
             $table->string('title')->nullable()->comment('Conversation title, generated from first message');
             $table->timestamps();
         });
 
-        Schema::create('ai_entry_assistant_messages', function (Blueprint $table) {
+        Schema::create('ai_entry_assistant_messages', function (Blueprint $table): void {
             $table->uuid('id')->primary()->comment('Unique message identifier');
             $table->uuid('conversation_id')->comment('Parent conversation reference');
             $table->foreign('conversation_id')

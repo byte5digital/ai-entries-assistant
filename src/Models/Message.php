@@ -13,16 +13,29 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
-/** @use HasFactory<MessageFactory> */
+/**
+ * @property string $id
+ * @property string $conversation_id
+ * @property string|null $user_id
+ * @property MessageRole $role
+ * @property string $content
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @use HasFactory<MessageFactory>
+ */
 final class Message extends Model
 {
     /** @use HasFactory<MessageFactory> */
     use HasFactory;
-    use HasUuids;
+
     use HasTimestamps;
+    use HasUuids;
 
     protected $table = 'ai_entry_assistant_messages';
+
     protected $fillable = [
         'conversation_id',
         'user_id',

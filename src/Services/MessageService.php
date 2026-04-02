@@ -17,37 +17,36 @@ final class MessageService implements MessageServiceInterface
     /** @return Collection<int, Message> */
     public function getMessages(string $conversationId, ?int $limit = null): Collection
     {
-        return Message::where('conversation_id', $conversationId)
-            ->orderBy('created_at')
+        return Message::query()->where('conversation_id', $conversationId)->oldest()
             ->when($limit, fn ($query) => $query->limit($limit))
             ->get();
     }
 
     public function createUserMessage(string $conversationId, string $userId, string $content): Message
     {
-        $message = Message::create([
+        $message = Message::query()->create([
             'conversation_id' => $conversationId,
             'user_id' => $userId,
             'role' => MessageRole::User,
             'content' => $content,
         ]);
 
-        $conversation = Conversation::findOrFail($conversationId);
-        UserMessageAddedToConversation::dispatch($message, $conversation);
+        $conversation = Conversation::query()->findOrFail($conversationId);
+        event(new UserMessageAddedToConversation($message, $conversation));
 
         return $message;
     }
 
     public function createAiAssistantMessage(string $conversationId, string $content): Message
     {
-        $message = Message::create([
+        $message = Message::query()->create([
             'conversation_id' => $conversationId,
             'role' => MessageRole::AiAssistant,
             'content' => $content,
         ]);
 
-        $conversation = Conversation::findOrFail($conversationId);
-        AiAssistantMessageAddedToConversation::dispatch($message, $conversation);
+        $conversation = Conversation::query()->findOrFail($conversationId);
+        event(new AiAssistantMessageAddedToConversation($message, $conversation));
 
         return $message;
     }

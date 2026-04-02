@@ -11,24 +11,22 @@ use Byte5\AiEntriesAssistant\Services\Contracts\ConversationServiceInterface;
 use Byte5\AiEntriesAssistant\Services\Contracts\MessageServiceInterface;
 use Illuminate\Support\Str;
 
-final class ConversationService implements ConversationServiceInterface
+final readonly class ConversationService implements ConversationServiceInterface
 {
     public function __construct(
-        private readonly MessageServiceInterface $messageService,
-    ) {
-    }
+        private MessageServiceInterface $messageService,
+    ) {}
 
     public function startConversation(string $content, string $userId): Conversation
     {
-        $conversation = Conversation::create([
+        $conversation = Conversation::query()->create([
             'user_id' => $userId,
             'title' => Str::limit($content, 100, preserveWords: true),
         ]);
 
-
         $this->messageService->createUserMessage($conversation->id, $userId, $content);
 
-        ConversationStarted::dispatch($conversation, $userId);
+        event(new ConversationStarted($conversation, $userId));
 
         return $conversation;
     }
@@ -41,7 +39,7 @@ final class ConversationService implements ConversationServiceInterface
 
         $conversation->delete();
 
-        ConversationDeleted::dispatch($conversationId, $userId, $title);
+        event(new ConversationDeleted($conversationId, $userId, $title));
     }
 
     public function updateTitle(Conversation $conversation, string $title): Conversation

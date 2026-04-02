@@ -20,24 +20,22 @@ use Laravel\Ai\Messages\AssistantMessage;
 use Laravel\Ai\Messages\UserMessage;
 use Laravel\Ai\Promptable;
 use Laravel\Ai\Tools\SimilaritySearch;
-use Stringable;
 
 #[Temperature(0.7)]
 #[Timeout(120)]
-final class EntriesAssistantAgent implements Agent, Conversational, HasTools, HasStructuredOutput
+final class EntriesAssistantAgent implements Agent, Conversational, HasStructuredOutput, HasTools
 {
     use Promptable;
 
-    protected ?string $conversationId = null;
+    private ?string $conversationId = null;
 
     public function __construct(
         private readonly MessageServiceInterface $messageService,
-    ) {
-    }
+    ) {}
 
     public function provider(): Lab|string
     {
-        return config('ai-entries-assistant.provider') ?? config('ai.default');
+        return config('ai-entries-assistant.provider', config('ai.default'));
     }
 
     public function forConversation(string $conversationId): self
@@ -47,7 +45,7 @@ final class EntriesAssistantAgent implements Agent, Conversational, HasTools, Ha
         return $this;
     }
 
-    public function instructions(): Stringable|string
+    public function instructions(): string
     {
         return <<<'INSTRUCTIONS'
         You are a helpful assistant that answers questions based exclusively on information found in the entries database.
@@ -83,13 +81,13 @@ final class EntriesAssistantAgent implements Agent, Conversational, HasTools, Ha
 
     public function messages(): iterable
     {
-        if (!$this->conversationId) {
+        if (! $this->conversationId) {
             return [];
         }
 
         return $this->messageService
             ->getMessages($this->conversationId)
-            ->map(fn(Message $message) => match ($message->role) {
+            ->map(fn (Message $message): UserMessage|AssistantMessage => match ($message->role) {
                 MessageRole::User => new UserMessage($message->content),
                 MessageRole::AiAssistant => new AssistantMessage($message->content),
             })
