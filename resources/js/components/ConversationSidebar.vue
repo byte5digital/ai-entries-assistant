@@ -45,10 +45,6 @@ async function loadMoreConversations() {
 }
 
 
-function truncate(text, maxLength = 30) {
-  return text.length > maxLength ? text.slice(0, maxLength) + '…' : text;
-}
-
 function navigateToConversation(url) {
   router.visit(url);
 }

@@ -12,7 +12,6 @@ const props = defineProps({
 });
 
 const hasConversations = computed(() => (props.initialConversations?.data?.length ?? 0) > 0);
-const sidebarRef = ref(null);
 const mdBreakpoint = getComputedStyle(document.documentElement).getPropertyValue('--breakpoint-md');
 const sidebarOpen = ref(window.matchMedia(`(min-width: ${mdBreakpoint})`).matches);
 
@@ -25,7 +24,6 @@ const sidebarOpen = ref(window.matchMedia(`(min-width: ${mdBreakpoint})`).matche
     <Panel class="relative flex flex-row flex-1 min-h-0">
       <ConversationSidebar
           v-if="hasConversations"
-          ref="sidebarRef"
           :active-conversation-id="null"
           :conversations-index-url="conversationsIndexUrl"
           :initial-conversations="initialConversations"

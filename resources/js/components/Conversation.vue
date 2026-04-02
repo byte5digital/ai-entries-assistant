@@ -12,16 +12,10 @@ import {
   Modal,
   ModalClose
 } from "@statamic/cms/ui";
-import {marked} from 'marked';
 import TypingIndicator from "./TypingIndicator.vue";
 import {useMessages} from "../composables/useMessages.js";
 import {useConversationActions} from "../composables/useConversationActions.js";
 import Message from "./Message.vue";
-
-marked.setOptions({
-  breaks: true,
-  gfm: true,
-});
 
 const props = defineProps({
   conversationId: String,

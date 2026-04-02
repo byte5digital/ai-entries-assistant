@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from 'vue';
+import {ref, useTemplateRef} from 'vue';
 import {Header, Panel} from '@statamic/cms/ui';
 import ConversationComponent from "../js/components/Conversation.vue";
 import ConversationSidebar from "../js/components/ConversationSidebar.vue";
@@ -19,7 +19,7 @@ const props = defineProps({
 
 const mdBreakpoint = getComputedStyle(document.documentElement).getPropertyValue('--breakpoint-md');
 const sidebarOpen = ref(window.matchMedia(`(min-width: ${mdBreakpoint})`).matches);
-const sidebarRef = ref(null);
+const sidebarRef = useTemplateRef('sidebarRef');
 
 function toggleSidebar() {
   sidebarOpen.value = !sidebarOpen.value;

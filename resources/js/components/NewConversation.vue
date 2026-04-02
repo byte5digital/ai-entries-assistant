@@ -1,5 +1,5 @@
 <script setup>
-import {computed, shallowRef} from 'vue';
+import {computed} from 'vue';
 import {Head, useForm} from '@statamic/cms/inertia';
 import {Button, Card, Input} from "@statamic/cms/ui";
 import Message from "./Message.vue";
@@ -11,12 +11,11 @@ const props = defineProps({
   startConversationUrl: String,
 });
 
-const newMessage = shallowRef('');
-const hasNewInput = computed(() => newMessage.value.trim().length > 0);
-
 const form = useForm({
   content: null
 });
+
+const hasNewInput = computed(() => (form.content ?? '').trim().length > 0);
 
 const welcomeMessage = {
   role: 'ai_assistant',
